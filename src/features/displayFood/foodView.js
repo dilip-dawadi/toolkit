@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchFoods, deleteaFood } from '../../toolkit/slice/foodSlice'
-import Upload from '../foodUpload/uploadFile'
+import FoodUpload from '../foodUpload/uploadFood'
+import Loading from '../../toolkit/slice/loading'
+import Allfood from './Allfood';
+import { Grid } from '@mui/material'
 
 const UserView = () => {
     const food = useSelector(state => state.food);
@@ -12,24 +15,27 @@ const UserView = () => {
             dispatch(fetchFoods())
         }
     }, [dispatch])
-
     return (
-        <div> <h2>List of Users</h2>
-            <Upload currentId={currentId} />
-            {food.loading && <div>Loading...</div>}
-            {!food.loading && food.error ? <div>Error: {food.error}</div> : null}
-            {!food.loading && food.FoodData.length ? (
-                <ul>
-                    {food.FoodData.map(food => (
-                        <li key={food._id}>{food.title}
-                            <button onClick={() => dispatch(deleteaFood(food._id))}>Delete</button>
-                            <button onClick={() => setCurrentId(food._id)}>Edit</button>
-                        </li>
-                    ))}
-                </ul>
-            ) : null
+        <>
+            <FoodUpload currentId={currentId} />
+            {food.loading && <Loading />}
+            {
+                !food.loading && food.FoodData.length ? (
+                    <Grid
+                        container
+                        alignItems="stretch"
+                        spacing={2}
+                        style={{
+                            marginTop: '10px'
+                        }}
+                    >
+                        {food.FoodData.map((foods) => (
+                            < Allfood foodData={foods} setCurrentId={setCurrentId} deleteaFood={deleteaFood} key={foods._id} />
+
+                        ))}</Grid>
+                ) : null
             }
-        </div >
+        </>
     )
 }
 
